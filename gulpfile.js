@@ -22,6 +22,7 @@ const prettier = require('gulp-prettier');
 const useref = require('gulp-useref');
 const gulpIf = require('gulp-if');
 const imageMin = require('gulp-imagemin');
+const cache = require('gulp-cache');
 const browserSync = require('browser-sync').create();
 
 // Configuration for the gulp-prettier formatter
@@ -99,11 +100,15 @@ function bundleImages() {
         gulp
             // Locate Images
             .src('./src/images/**/*.+(png|jpg|gif|svg)')
-            // Minify images
-            .pipe(imageMin())
+            // Minify images and cache them for better performance
+            .pipe(cache(imageMin()))
             // Save the Images
             .pipe(gulp.dest('./dist/images'))
     );
+}
+
+function clearCache() {
+    return cache.clearAll();
 }
 
 /**
@@ -129,3 +134,9 @@ exports.release = gulp.series(
     compileSass,
     gulp.parallel(bundleHTML, bundleImages)
 );
+exports.releaseAll = gulp.series(
+    clearCache,
+    compileSass,
+    gulp.parallel(bundleHTML, bundleImages)
+);
+exports.clearCache = clearCache;
