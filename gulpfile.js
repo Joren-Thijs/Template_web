@@ -24,7 +24,6 @@ const sass = require('gulp-sass');
 const autoprefixer = require('gulp-autoprefixer');
 const sourceMaps = require('gulp-sourcemaps');
 const lineEndingCorrector = require('gulp-line-ending-corrector');
-const concat = require('gulp-concat');
 const uglify = require('gulp-uglify');
 const cleanCSS = require('gulp-clean-css');
 const strip_comments = require('gulp-strip-json-comments');
@@ -109,6 +108,19 @@ function bundleHTML() {
 }
 
 /**
+ * Publish fonts to the './dist' folder
+ */
+function bundleFonts() {
+    return (
+        gulp
+            // Locate fonts
+            .src('./src/fonts/**/*')
+            // Save the fonts
+            .pipe(gulp.dest('./dist/fonts'))
+    );
+}
+
+/**
  * Publish and minify images to the './dist' folder
  */
 function bundleImages() {
@@ -161,13 +173,13 @@ exports.watch = watch;
 exports.release = gulp.series(
     compileSass,
     clearDist,
-    gulp.parallel(bundleHTML, bundleImages)
+    gulp.parallel(bundleHTML, bundleImages, bundleFonts)
 );
 exports.releaseAll = gulp.series(
     clearCache,
     compileSass,
     clearDist,
-    gulp.parallel(bundleHTML, bundleImages)
+    gulp.parallel(bundleHTML, bundleImages, bundleFonts)
 );
 exports.clearCache = clearCache;
 exports.clearDist = clearDist;
