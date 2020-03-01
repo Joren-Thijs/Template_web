@@ -127,7 +127,7 @@ function bundleImages() {
     return (
         gulp
             // Locate Images
-            .src('./src/images/**/*.+(png|jpg|gif|svg)')
+            .src('./src/images/**/*.+(png|jpg|jpeg|gif|svg)')
             // Minify images and cache them for better performance
             .pipe(cache(imageMin()))
             // Save the Images
