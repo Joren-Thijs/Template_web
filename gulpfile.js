@@ -23,6 +23,7 @@ const useref = require('gulp-useref');
 const gulpIf = require('gulp-if');
 const imageMin = require('gulp-imagemin');
 const cache = require('gulp-cache');
+const del = require('del');
 const browserSync = require('browser-sync').create();
 
 // Configuration for the gulp-prettier formatter
@@ -111,6 +112,10 @@ function clearCache() {
     return cache.clearAll();
 }
 
+function clearDist() {
+    return del(['./dist/**', '!dist']);
+}
+
 /**
  * Starts the dev server and watches for file changes
  */
@@ -132,11 +137,14 @@ exports.build = compileSass;
 exports.watch = watch;
 exports.release = gulp.series(
     compileSass,
+    clearDist,
     gulp.parallel(bundleHTML, bundleImages)
 );
 exports.releaseAll = gulp.series(
     clearCache,
     compileSass,
+    clearDist,
     gulp.parallel(bundleHTML, bundleImages)
 );
 exports.clearCache = clearCache;
+exports.clearDist = clearDist;
