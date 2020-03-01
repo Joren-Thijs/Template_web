@@ -15,11 +15,13 @@ const autoprefixer = require('gulp-autoprefixer');
 const sourceMaps = require('gulp-sourcemaps');
 const lineEndingCorrector = require('gulp-line-ending-corrector');
 const concat = require('gulp-concat');
-const htmlReplace = require('gulp-html-replace');
 const uglify = require('gulp-uglify');
 const cleanCSS = require('gulp-clean-css');
 const strip_comments = require('gulp-strip-json-comments');
 const prettier = require('gulp-prettier');
+const useref = require('gulp-useref');
+const gulpIf = require('gulp-if');
+const imageMin = require('gulp-imagemin');
 const browserSync = require('browser-sync').create();
 
 // Configuration for the gulp-prettier formatter
@@ -67,72 +69,40 @@ function compileSass() {
 }
 
 /**
- * Minify the css in the './src/css/' folder and publish it to the './dist/css/' folder.
+ * Publish HTML, CSS, JS to the dist folder and concat and minify the CSS and JS while replacing its's html references
  */
-function bundleCSS() {
-    return (
-        gulp
-            // Locate css files
-            .src('./src/css/*.css')
-            // Initialize sourceMaps
-            .pipe(sourceMaps.init())
-            // Bundle files
-            .pipe(concat('styles.min.css'))
-            // Remove comments
-            .pipe(strip_comments())
-            // Format CSS
-            .pipe(prettier(prettierOptions))
-            // Minify them
-            .pipe(cleanCSS())
-            // Correct Line endings
-            .pipe(lineEndingCorrector())
-            // Write sourceMaps
-            .pipe(sourceMaps.write('./maps'))
-            // Save the minified css
-            .pipe(gulp.dest('./dist/css'))
-    );
-}
-
-function bundleJS() {
-    return (
-        gulp
-            // Locate JS files
-            .src('./src/js/*.js')
-            // Initialize sourceMaps
-            .pipe(sourceMaps.init())
-            // Bundle files
-            .pipe(concat('bundle.min.js'))
-            // Remove comments
-            .pipe(strip_comments())
-            // Format JS
-            .pipe(prettier(prettierOptions))
-            // Minify them
-            .pipe(uglify())
-            // Correct Line endings
-            .pipe(lineEndingCorrector())
-            // Write sourceMaps
-            .pipe(sourceMaps.write('./maps'))
-            // Save the minified JS
-            .pipe(gulp.dest('./dist/js'))
-    );
-}
-
 function bundleHTML() {
     return (
         gulp
             // Locate HTML Files
             .src('./src/*.html')
-            // Replace dev CSS and JS references with bundle references
-            .pipe(
-                htmlReplace({
-                    css: 'css/styles.min.css',
-                    js: 'js/bundle.min.js',
-                })
-            )
-            // Format HTML
+            // Concat CSS and JS and replace references with bundle references
+            .pipe(useref())
+            // Minify the bundled Assets
+            // Remove comments
+            .pipe(strip_comments())
+            // Format CSS and JS
             .pipe(prettier(prettierOptions))
+            // Minify the CSS
+            .pipe(gulpIf('*.css', cleanCSS()))
+            // Minify the JS
+            .pipe(gulpIf('*.js', uglify()))
+            // Correct Line endings
+            .pipe(lineEndingCorrector())
             // Save the HTML Files
             .pipe(gulp.dest('./dist'))
+    );
+}
+
+function bundleImages() {
+    return (
+        gulp
+            // Locate Images
+            .src('./src/images/**/*.+(png|jpg|gif|svg)')
+            // Minify images
+            .pipe(imageMin())
+            // Save the Images
+            .pipe(gulp.dest('./dist/images'))
     );
 }
 
@@ -157,5 +127,5 @@ exports.build = compileSass;
 exports.watch = watch;
 exports.release = gulp.series(
     compileSass,
-    gulp.parallel(bundleCSS, bundleJS, bundleHTML)
+    gulp.parallel(bundleHTML, bundleImages)
 );
