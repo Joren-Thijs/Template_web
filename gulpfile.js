@@ -1,14 +1,24 @@
 /**
  * @author Joren Thijs
  * @version V1.0
+ *
  * @summary This gulp file contains all development and build tools for a standard website.
  * @description This file was made using Gulp V4.0.2.
  * It performs build tasks like compiling and hosting a dev server.
  * It also performs publish tasks like bundeling and minifying.
+ *
  * @tutorial type gulp watch to start the dev environment.
  * type gulp release to bundle and minify project and export it into the dist folder.
+ *
+ * @exports build Compile the sass into css
+ * @exports watch Starts the dev server and watches for file changes
+ * @exports release Compiles and minifys project and publishes to the dist folder
+ * @exports releaseAll Cleares cache + Compiles and minifys project and publishes to the dist folder
+ * @exports clearCache Cleares cache
+ * @exports clearDist Deletes contents of the dist folder
  */
 
+// Imports
 const gulp = require('gulp');
 const sass = require('gulp-sass');
 const autoprefixer = require('gulp-autoprefixer');
@@ -26,7 +36,9 @@ const cache = require('gulp-cache');
 const del = require('del');
 const browserSync = require('browser-sync').create();
 
-// Configuration for the gulp-prettier formatter
+/**
+ * Configuration for the gulp-prettier formatter
+ */
 const prettierOptions = {
     tabWidth: 4,
     useTabs: false,
@@ -96,6 +108,9 @@ function bundleHTML() {
     );
 }
 
+/**
+ * Publish and minify images to the './dist' folder
+ */
 function bundleImages() {
     return (
         gulp
@@ -108,16 +123,23 @@ function bundleImages() {
     );
 }
 
+/**
+ * Clear the gulp-cache
+ */
 function clearCache() {
     return cache.clearAll();
 }
 
+/**
+ * Delete the contents of the './dist' folder
+ */
 function clearDist() {
     return del(['./dist/**', '!dist']);
 }
 
 /**
  * Starts the dev server and watches for file changes
+ * @listens port 3000
  */
 function watch() {
     browserSync.init({
@@ -133,6 +155,7 @@ function watch() {
     gulp.watch('./src/js/**/*.js').on('change', browserSync.reload);
 }
 
+// Exports
 exports.build = compileSass;
 exports.watch = watch;
 exports.release = gulp.series(
