@@ -14,21 +14,6 @@
         "reveal": "always",
         "panel": "new"
       }
-    },
-    {
-      "type": "gulp",
-      "task": "build",
-      "problemMatcher": []
-    },
-    {
-      "type": "gulp",
-      "task": "watch",
-      "problemMatcher": []
-    },
-    {
-      "type": "gulp",
-      "task": "release",
-      "problemMatcher": []
     }
   ]
 }
