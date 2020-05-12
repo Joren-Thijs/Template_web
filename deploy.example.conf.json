@@ -1,0 +1,8 @@
+{
+  "TODO": "Copy this file, remove the .example from the name, remove this TODO propery, fill with correct data",
+  "username": "username on remote server",
+  "hostname": "example-domain.com",
+  "destination": "destination folder on remote server",
+  "port": "ssh port number on remote server, example: 22",
+  "compress": true
+}
